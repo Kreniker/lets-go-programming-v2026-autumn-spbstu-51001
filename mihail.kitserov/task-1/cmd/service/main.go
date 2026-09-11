@@ -37,6 +37,6 @@ func main() {
 		}
 		fmt.Println(firstArgument / secondArgument)
 	default:
-		fmt.Println()
+		fmt.Println("Invalid operation")
 	}
 }
