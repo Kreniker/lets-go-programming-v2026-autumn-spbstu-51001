@@ -29,7 +29,7 @@ func main() {
 	case "-":
 		fmt.Println(firstArgument - secondArgument)
 	case "*":
-		fmt.Println(firstArgument - secondArgument)
+		fmt.Println(firstArgument * secondArgument)
 	case "/":
 		if secondArgument == 0 {
 			fmt.Println("Division by zero")
