@@ -33,6 +33,7 @@ func main() {
 	case "/":
 		if second_argument == 0 {
 			fmt.Println("Division by zero")
+			break
 		}
 		fmt.Println(first_argument / second_argument)
 	default:
