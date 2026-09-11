@@ -23,4 +23,19 @@ func main() {
 		fmt.Println("Invalid operation")
 		return
 	}
+	switch operation {
+	case "+":
+		fmt.Println(first_argument + second_argument)
+	case "-":
+		fmt.Println(first_argument - second_argument)
+	case "*":
+		fmt.Println(first_argument - second_argument)
+	case "/":
+		if second_argument == 0 {
+			fmt.Println("Division by zero")
+		}
+		fmt.Println(first_argument / second_argument)
+	default:
+		fmt.Println()
+	}
 }
