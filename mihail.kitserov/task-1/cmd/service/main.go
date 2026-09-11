@@ -5,14 +5,14 @@ import (
 )
 
 func main() {
-	var first_argument int
-	_, err := fmt.Scan(&first_argument)
+	var firstArgument int
+	_, err := fmt.Scan(&firstArgument)
 	if err != nil {
 		fmt.Println("Invalid first operand")
 		return
 	}
-	var second_argument int
-	_, err = fmt.Scan(&second_argument)
+	var secondArgument int
+	_, err = fmt.Scan(&secondArgument)
 	if err != nil {
 		fmt.Println("Invalid second operand")
 		return
@@ -25,17 +25,17 @@ func main() {
 	}
 	switch operation {
 	case "+":
-		fmt.Println(first_argument + second_argument)
+		fmt.Println(firstArgument + secondArgument)
 	case "-":
-		fmt.Println(first_argument - second_argument)
+		fmt.Println(firstArgument - secondArgument)
 	case "*":
-		fmt.Println(first_argument - second_argument)
+		fmt.Println(firstArgument - secondArgument)
 	case "/":
-		if second_argument == 0 {
+		if secondArgument == 0 {
 			fmt.Println("Division by zero")
 			break
 		}
-		fmt.Println(first_argument / second_argument)
+		fmt.Println(firstArgument / secondArgument)
 	default:
 		fmt.Println()
 	}
