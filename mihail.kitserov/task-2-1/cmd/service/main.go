@@ -18,6 +18,8 @@ func main() {
 			fmt.Println("Non-correct employee count")
 			return
 		}
+		min := 15
+		max := 30
 		for j := 0; j < int(employee_count); j++ {
 			var operator string
 			_, err := fmt.Scan(&operator)
@@ -44,7 +46,16 @@ func main() {
 				fmt.Println("Number must be in range [15, 30]")
 				return
 			}
-
+			if operator == "<=" {
+				max = int(num)
+			} else {
+				min = int(num)
+			}
+			if min > max {
+				fmt.Println("-1")
+				break
+			}
+			fmt.Println(min)
 		}
 	}
 }
