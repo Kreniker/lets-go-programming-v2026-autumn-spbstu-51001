@@ -5,57 +5,75 @@ import (
 )
 
 func main() {
-	var offices_count uint
-	_, err := fmt.Scan(&offices_count)
+	var officesCount uint
+	_, err := fmt.Scan(&officesCount)
 	if err != nil {
 		fmt.Println("Non-correct count offices")
+
 		return
 	}
-	for i := 0; i < int(offices_count); i++ {
-		var employee_count uint
-		_, err := fmt.Scan(&employee_count)
+	var i uint = 0
+	for ; i < officesCount; i++ {
+		var employeeCount uint
+		_, err := fmt.Scan(&employeeCount)
 		if err != nil {
 			fmt.Println("Non-correct employee count")
+
 			return
 		}
-		min := 15
-		max := 30
-		for j := 0; j < int(employee_count); j++ {
+		minNum := 15
+		maxNum := 30
+		var j uint = 0
+		needLen := 2
+		for ; j < employeeCount; j++ {
 			var operator string
 			_, err := fmt.Scan(&operator)
 			if err != nil {
 				fmt.Println("Non-correct operator")
+
 				return
 			}
-			if len(operator) != 2 {
+
+			if len(operator) != needLen {
 				fmt.Println("Too long or short operator")
+
 				return
 			}
+
 			if operator != "<=" && operator != ">=" {
 				fmt.Println("First need to be '<=' or '>='")
+
 				return
 			}
 
 			var num uint
 			_, err = fmt.Scan(&num)
+
 			if err != nil {
 				fmt.Println("Non-correct number")
+
 				return
 			}
+
 			if num > 30 || num < 15 {
 				fmt.Println("Number must be in range [15, 30]")
+
 				return
 			}
+
 			if operator == "<=" {
-				max = int(num)
+				maxNum = int(num)
 			} else {
-				min = int(num)
+				minNum = int(num)
 			}
-			if min > max {
+
+			if minNum > maxNum {
 				fmt.Println("-1")
+
 				continue
 			}
-			fmt.Println(min)
+			
+			fmt.Println(minNum)
 		}
 	}
 }
