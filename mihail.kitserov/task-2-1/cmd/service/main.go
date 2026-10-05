@@ -31,7 +31,6 @@ func main() {
 
 		return
 	}
-	
 	i := 0
 	for ; i < officesCount; i++ {
 		var employeeCount int
@@ -40,6 +39,7 @@ func main() {
 		if err != nil {
 			return
 		}
+
 		minNum := 15
 		maxNum := 30
 
@@ -63,7 +63,6 @@ func main() {
 
 			var num int
 			_, err = fmt.Scan(&num)
-
 			if err != nil {
 				return
 			}
