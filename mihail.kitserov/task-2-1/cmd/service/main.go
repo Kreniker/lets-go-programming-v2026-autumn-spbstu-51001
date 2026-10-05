@@ -53,7 +53,7 @@ func main() {
 			}
 			if min > max {
 				fmt.Println("-1")
-				break
+				continue
 			}
 			fmt.Println(min)
 		}
