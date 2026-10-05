@@ -31,6 +31,7 @@ func main() {
 
 		return
 	}
+
 	i := 0
 	for ; i < officesCount; i++ {
 		var employeeCount int
@@ -62,6 +63,7 @@ func main() {
 			}
 
 			var num int
+
 			_, err = fmt.Scan(&num)
 			if err != nil {
 				return
