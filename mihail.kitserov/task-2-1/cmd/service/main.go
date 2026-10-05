@@ -4,76 +4,69 @@ import (
 	"fmt"
 )
 
+func processRequest(operator string, num int, minNum *int, maxNum *int) int {
+	if operator == ">=" {
+		if num > *minNum {
+			*minNum = num
+		}
+	} else if operator == "<=" {
+		if num < *maxNum {
+			*maxNum = num
+		}
+	}
+
+	if *minNum > *maxNum {
+		return -1
+	}
+
+	return *minNum
+}
+
 func main() {
-	var officesCount uint
+	var officesCount int
 	_, err := fmt.Scan(&officesCount)
 	if err != nil {
 		fmt.Println("Non-correct count offices")
 
 		return
 	}
-	var i uint = 0
+	var i int = 0
 	for ; i < officesCount; i++ {
-		var employeeCount uint
+		var employeeCount int
+
 		_, err := fmt.Scan(&employeeCount)
 		if err != nil {
-			fmt.Println("Non-correct employee count")
-
 			return
 		}
-		minNum := 15
-		maxNum := 30
-		var j uint = 0
+		var minNum int = 15
+		var maxNum int = 30
+		var j int = 0
 		needLen := 2
 		for ; j < employeeCount; j++ {
 			var operator string
 			_, err := fmt.Scan(&operator)
 			if err != nil {
-				fmt.Println("Non-correct operator")
-
 				return
 			}
 
 			if len(operator) != needLen {
-				fmt.Println("Too long or short operator")
-
 				return
 			}
 
 			if operator != "<=" && operator != ">=" {
-				fmt.Println("First need to be '<=' or '>='")
-
 				return
 			}
 
-			var num uint
+			var num int
 			_, err = fmt.Scan(&num)
 
 			if err != nil {
-				fmt.Println("Non-correct number")
-
 				return
 			}
 
-			if num > 30 || num < 15 {
-				fmt.Println("Number must be in range [15, 30]")
+			ans := processRequest(operator, num, &minNum, &maxNum)
 
-				return
-			}
-
-			if operator == "<=" {
-				maxNum = int(num)
-			} else {
-				minNum = int(num)
-			}
-
-			if minNum > maxNum {
-				fmt.Println("-1")
-
-				continue
-			}
-			
-			fmt.Println(minNum)
+			fmt.Println(ans)
 		}
 	}
 }
