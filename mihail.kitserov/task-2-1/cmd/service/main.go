@@ -24,13 +24,15 @@ func processRequest(operator string, num int, minNum *int, maxNum *int) int {
 
 func main() {
 	var officesCount int
+
 	_, err := fmt.Scan(&officesCount)
 	if err != nil {
 		fmt.Println("Non-correct count offices")
 
 		return
 	}
-	var i int = 0
+	
+	i := 0
 	for ; i < officesCount; i++ {
 		var employeeCount int
 
@@ -38,17 +40,19 @@ func main() {
 		if err != nil {
 			return
 		}
-		var minNum int = 15
-		var maxNum int = 30
-		var j int = 0
-		needLen := 2
+		minNum := 15
+		maxNum := 30
+
+		j := 0
 		for ; j < employeeCount; j++ {
 			var operator string
+
 			_, err := fmt.Scan(&operator)
 			if err != nil {
 				return
 			}
 
+			needLen := 2
 			if len(operator) != needLen {
 				return
 			}
