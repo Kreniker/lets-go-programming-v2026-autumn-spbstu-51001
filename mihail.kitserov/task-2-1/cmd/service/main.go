@@ -38,6 +38,8 @@ func main() {
 
 		_, err := fmt.Scan(&employeeCount)
 		if err != nil {
+			fmt.Println("Non-correct count employees")
+
 			return
 		}
 
@@ -50,15 +52,14 @@ func main() {
 
 			_, err := fmt.Scan(&operator)
 			if err != nil {
-				return
-			}
+				fmt.Println("Non-correct operator input")
 
-			needLen := 2
-			if len(operator) != needLen {
 				return
 			}
 
 			if operator != "<=" && operator != ">=" {
+				fmt.Println("Non-correct operator input")
+
 				return
 			}
 
@@ -66,6 +67,8 @@ func main() {
 
 			_, err = fmt.Scan(&num)
 			if err != nil {
+				fmt.Println("Non-correct input number")
+
 				return
 			}
 
