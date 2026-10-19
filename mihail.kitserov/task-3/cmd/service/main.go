@@ -167,6 +167,57 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 	}
 }
 
+func (v *Valute) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+    for _, attr := range start.Attr {
+        switch attr.Name.Local {
+        case "ID":
+            v.ID = attr.Value
+        case "NumCode", "Vcode":
+            v.NumCode = attr.Value
+        case "CharCode", "VchCode":
+            v.CharCode = attr.Value
+        case "Nominal", "Vnom":
+            v.Nominal, _ = strconv.Atoi(strings.TrimSpace(attr.Value))
+        case "Name", "Vname":
+            v.Name = attr.Value
+        case "Value", "Vcurs":
+            v.Value = attr.Value
+        }
+    }
+
+		for {
+        tok, err := d.Token()
+        if err != nil {
+            return err
+        }
+        switch t := tok.(type) {
+        case xml.StartElement:
+            var content string
+						
+            if err := d.DecodeElement(&content, &t); err != nil {
+                return err
+            }
+            content = strings.TrimSpace(content)
+            switch t.Name.Local {
+            case "NumCode", "Vcode":
+                v.NumCode = content
+            case "CharCode", "VchCode":
+                v.CharCode = content
+            case "Nominal", "Vnom":
+                v.Nominal, _ = strconv.Atoi(content)
+            case "Name", "Vname":
+                v.Name = content
+            case "Value", "Vcurs":
+                v.Value = content
+            }
+        case xml.EndElement:
+            if t.Name == start.Name {
+                return nil
+            }
+        }
+    }
+}
+
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to the config file")
 	flag.Parse()
