@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"flag"
 	"fmt"
 	"os"
@@ -12,6 +13,21 @@ import (
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
+}
+
+type Valute struct {
+	ID       string `xml:"ID,attr"`
+	NumCode  string `xml:"NumCode"`
+	CharCode string `xml:"CharCode"`
+	Nominal  int    `xml:"Nominal"`
+	Name     string `xml:"Name"`
+	Value    string `xml:"Value"`
+}
+
+type ValCurs struct {
+	XMLName xml.Name `xml:"ValCurs"`
+	Date    string   `xml:"Date,attr"`
+	Valutes []Valute `xml:"Valute"`
 }
 
 func LoadConfig(path string) Config {
@@ -44,11 +60,12 @@ func EnsureOutputPath(outputPath string) {
 	}
 
 	f, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY, 0644)
-	defer f.Close()
 
 	if err != nil {
 		panic(fmt.Sprintf("error creating file %q: %v", outputPath, err))
 	}
+
+	_ = f.Close()
 }
 
 func main() {
