@@ -42,56 +42,6 @@ type ValuteJSON struct {
 	Value    float64 `json:"value"`
 }
 
-func (v *Valute) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	for _, attr := range start.Attr {
-		switch strings.ToLower(attr.Name.Local) {
-		case "id":
-			v.ID = attr.Value
-		case "numcode", "vcode", "code":
-			v.NumCode = strings.TrimSpace(attr.Value)
-		case "charcode", "vchcode", "chcode":
-			v.CharCode = strings.TrimSpace(attr.Value)
-		case "nominal", "vnom", "nom":
-			v.Nominal, _ = strconv.Atoi(strings.TrimSpace(attr.Value))
-		case "name", "vname":
-			v.Name = attr.Value
-		case "value", "vcurs", "curs":
-			v.Value = strings.TrimSpace(attr.Value)
-		}
-	}
-
-	for {
-		tok, err := d.Token()
-		if err != nil {
-			return err
-		}
-		switch t := tok.(type) {
-		case xml.StartElement:
-			var content string
-			if err := d.DecodeElement(&content, &t); err != nil {
-				return err
-			}
-			content = strings.TrimSpace(content)
-			switch strings.ToLower(t.Name.Local) {
-			case "numcode", "vcode", "code":
-				v.NumCode = content
-			case "charcode", "vchcode", "chcode":
-				v.CharCode = content
-			case "nominal", "vnom", "nom":
-				v.Nominal, _ = strconv.Atoi(content)
-			case "name", "vname":
-				v.Name = content
-			case "value", "vcurs", "curs":
-				v.Value = content
-			}
-		case xml.EndElement:
-			if t.Name == start.Name {
-				return nil
-			}
-		}
-	}
-}
-
 func LoadConfig(path string) Config {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -212,7 +162,7 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
 	}
 
-	if err := os.WriteFile(outputPath, data, 0644); err != nil {
+	if err := os.WriteFile(outputPath, data, 0600); err != nil {
 		panic(fmt.Sprintf("error writing file %q: %v", outputPath, err))
 	}
 }
