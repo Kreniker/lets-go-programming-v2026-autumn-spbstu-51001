@@ -171,17 +171,6 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 	}
 }
 
-func filterValid(valutes []Valute) []Valute {
-	result := make([]Valute, 0, len(valutes))
-	for _, v := range valutes {
-		if strings.TrimSpace(v.CharCode) == "" && strings.TrimSpace(v.NumCode) == "" {
-			continue
-		}
-		result = append(result, v)
-	}
-	return result
-}
-
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to the config file")
 	flag.Parse()
@@ -196,7 +185,7 @@ func main() {
 	valCurs := LoadValCurs(cfg.InputFile)
 
 	sortedValutes := SortValutesByValueDesc(valCurs)
-	sortedValutes = filterValid(sortedValutes)
+	//sortedValutes = filterValid(sortedValutes)
 
 	SaveValutesJSON(sortedValutes, cfg.OutputFile)
 }
