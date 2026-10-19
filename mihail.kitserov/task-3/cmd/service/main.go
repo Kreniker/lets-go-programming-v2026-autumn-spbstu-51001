@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -35,5 +36,12 @@ func LoadConfig(path string) Config {
 }
 
 func main() {
+	configPath := flag.String("config", "config.yaml", "path to the config file")
+	flag.Parse()
 
+	if *configPath == "" {
+		panic("config path is empty")
+	}
+	
+	cfg := LoadConfig(*configPath)
 }
