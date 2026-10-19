@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -105,6 +106,24 @@ func parseValue(s string) (float64, error) {
 	return strconv.ParseFloat(normalized, 64)
 }
 
+func SortValutesByValueDesc(valCurs ValCurs) []Valute {
+    sorted := make([]Valute, len(valCurs.Valutes))
+    copy(sorted, valCurs.Valutes)
+
+    sort.Slice(sorted, func(i, j int) bool {
+        vi, errI := parseValue(sorted[i].Value)
+        vj, errJ := parseValue(sorted[j].Value)
+
+        if errI != nil || errJ != nil {
+            return false
+        }
+
+        return vi > vj
+    })
+
+    return sorted
+}
+
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to the config file")
 	flag.Parse()
@@ -117,4 +136,5 @@ func main() {
 	EnsureOutputPath(cfg.OutputFile)
 
 	valCurs := LoadValCurs(cfg.InputFile)
+	sortedValutes := SortValutesByValueDesc(valCurs)
 }
