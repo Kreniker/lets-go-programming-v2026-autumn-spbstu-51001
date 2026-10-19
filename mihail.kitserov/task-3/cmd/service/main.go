@@ -168,20 +168,20 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 }
 
 func (v *Valute) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-    for _, attr := range start.Attr {
-        switch attr.Name.Local {
-        case "ID":
+        for _, attr := range start.Attr {
+        switch strings.ToLower(attr.Name.Local) {
+        case "id":
             v.ID = attr.Value
-        case "NumCode", "Vcode":
-            v.NumCode = attr.Value
-        case "CharCode", "VchCode":
-            v.CharCode = attr.Value
-        case "Nominal", "Vnom":
+        case "numcode", "vcode", "code":
+            v.NumCode = strings.TrimSpace(attr.Value)
+        case "charcode", "vchcode", "chcode":
+            v.CharCode = strings.TrimSpace(attr.Value)
+        case "nominal", "vnom", "nom":
             v.Nominal, _ = strconv.Atoi(strings.TrimSpace(attr.Value))
-        case "Name", "Vname":
+        case "name", "vname":
             v.Name = attr.Value
-        case "Value", "Vcurs":
-            v.Value = attr.Value
+        case "value", "vcurs", "curs":
+            v.Value = strings.TrimSpace(attr.Value)
         }
     }
 
@@ -193,21 +193,20 @@ func (v *Valute) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
         switch t := tok.(type) {
         case xml.StartElement:
             var content string
-						
             if err := d.DecodeElement(&content, &t); err != nil {
                 return err
             }
             content = strings.TrimSpace(content)
-            switch t.Name.Local {
-            case "NumCode", "Vcode":
+            switch strings.ToLower(t.Name.Local) {
+            case "numcode", "vcode", "code":
                 v.NumCode = content
-            case "CharCode", "VchCode":
+            case "charcode", "vchcode", "chcode":
                 v.CharCode = content
-            case "Nominal", "Vnom":
+            case "nominal", "vnom", "nom":
                 v.Nominal, _ = strconv.Atoi(content)
-            case "Name", "Vname":
+            case "name", "vname":
                 v.Name = content
-            case "Value", "Vcurs":
+            case "value", "vcurs", "curs":
                 v.Value = content
             }
         case xml.EndElement:
