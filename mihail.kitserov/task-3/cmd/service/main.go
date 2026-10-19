@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -15,6 +16,8 @@ import (
 	"go.yaml.in/yaml/v3"
 	"golang.org/x/text/encoding/charmap"
 )
+
+var ErrUnsupportedCharset = errors.New("unsupported charset")
 
 type Config struct {
 	InputFile  string `yaml:"input-file"`
@@ -67,11 +70,11 @@ func LoadConfig(path string) Config {
 func EnsureOutputPath(outputPath string) {
 	dir := filepath.Dir(outputPath)
 
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
 	}
 
-	f, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY, 0o644)
 
 	if err != nil {
 		panic(fmt.Sprintf("error creating file %q: %v", outputPath, err))
@@ -98,7 +101,7 @@ func LoadValCurs(path string) ValCurs {
 		case "utf-8", "":
 			return input, nil
 		default:
-			return nil, fmt.Errorf("error: unsupported charset: %s", charset)
+			return nil, ErrUnsupportedCharset
 		}
 	}
 
@@ -112,6 +115,7 @@ func LoadValCurs(path string) ValCurs {
 
 func parseValue(s string) (float64, error) {
 	normalized := strings.ReplaceAll(s, ",", ".")
+
 	return strconv.ParseFloat(normalized, 64)
 }
 
@@ -120,14 +124,14 @@ func SortValutesByValueDesc(valCurs ValCurs) []Valute {
 	copy(sorted, valCurs.Valutes)
 
 	sort.Slice(sorted, func(i, j int) bool {
-		vi, errI := parseValue(sorted[i].Value)
-		vj, errJ := parseValue(sorted[j].Value)
+		valueI, errI := parseValue(sorted[i].Value)
+		valueJ, errJ := parseValue(sorted[j].Value)
 
 		if errI != nil || errJ != nil {
 			return false
 		}
 
-		return vi > vj
+		return valueI > valueJ
 	})
 
 	return sorted
@@ -135,25 +139,27 @@ func SortValutesByValueDesc(valCurs ValCurs) []Valute {
 
 func SaveValutesJSON(valutes []Valute, outputPath string) {
 	result := make([]ValuteJSON, 0, len(valutes))
-	for _, v := range valutes {
-		numCodeStr := strings.TrimSpace(v.NumCode)
+	for _, valute := range valutes {
+		numCodeStr := strings.TrimSpace(valute.NumCode)
+
 		numCode := 0
 		if numCodeStr != "" {
 			var err error
 			numCode, err = strconv.Atoi(numCodeStr)
+
 			if err != nil {
-				panic(fmt.Sprintf("incorrect NumCode %q for %s: %v", v.NumCode, v.CharCode, err))
+				panic(fmt.Sprintf("incorrect NumCode %q for %s: %v", valute.NumCode, valute.CharCode, err))
 			}
 		}
 
-		value, err := parseValue(v.Value)
+		value, err := parseValue(valute.Value)
 		if err != nil {
 			value = 0
 		}
 
 		result = append(result, ValuteJSON{
 			NumCode:  numCode,
-			CharCode: v.CharCode,
+			CharCode: valute.CharCode,
 			Value:    value,
 		})
 	}
@@ -168,7 +174,7 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
 	}
 
-	if err := os.WriteFile(outputPath, data, 0600); err != nil {
+	if err := os.WriteFile(outputPath, data, 0o600); err != nil {
 		panic(fmt.Sprintf("error writing file %q: %v", outputPath, err))
 	}
 }
