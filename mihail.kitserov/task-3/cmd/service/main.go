@@ -4,10 +4,12 @@ import (
 	"encoding/xml"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
 	"go.yaml.in/yaml/v3"
+	"golang.org/x/text/encoding/charmap"
 )
 
 type Config struct {
@@ -66,6 +68,34 @@ func EnsureOutputPath(outputPath string) {
 	}
 
 	_ = f.Close()
+}
+
+func LoadValCurs(path string) ValCurs {
+	file, err := os.Open(path)
+	if err != nil {
+		panic(fmt.Sprintf("error opening input-file %q: %v", path, err))
+	}
+
+	defer file.Close()
+
+	decoder := xml.NewDecoder(file)
+	decoder.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
+		switch charset {
+		case "windows-1251":
+			return charmap.Windows1251.NewDecoder().Reader(input), nil
+		case "utf-8", "":
+			return input, nil
+		default:
+			return nil, fmt.Errorf("error: unsupported charset: %s", charset)
+		}
+	}
+
+	var valCurs ValCurs
+	if err := decoder.Decode(&valCurs); err != nil {
+		panic(fmt.Sprintf("error decoding XML from %q: %v", path, err))
+	}
+
+	return valCurs
 }
 
 func main() {
