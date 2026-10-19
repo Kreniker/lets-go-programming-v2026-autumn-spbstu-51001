@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"flag"
 	"fmt"
@@ -33,6 +34,12 @@ type ValCurs struct {
 	XMLName xml.Name `xml:"ValCurs"`
 	Date    string   `xml:"Date,attr"`
 	Valutes []Valute `xml:"Valute"`
+}
+
+type ValuteJSON struct {
+	NumCode  int     `json:"num_code"`
+	CharCode string  `json:"char_code"`
+	Value    float64 `json:"value"`
 }
 
 func LoadConfig(path string) Config {
@@ -107,21 +114,57 @@ func parseValue(s string) (float64, error) {
 }
 
 func SortValutesByValueDesc(valCurs ValCurs) []Valute {
-    sorted := make([]Valute, len(valCurs.Valutes))
-    copy(sorted, valCurs.Valutes)
+	sorted := make([]Valute, len(valCurs.Valutes))
+	copy(sorted, valCurs.Valutes)
 
-    sort.Slice(sorted, func(i, j int) bool {
-        vi, errI := parseValue(sorted[i].Value)
-        vj, errJ := parseValue(sorted[j].Value)
+	sort.Slice(sorted, func(i, j int) bool {
+		vi, errI := parseValue(sorted[i].Value)
+		vj, errJ := parseValue(sorted[j].Value)
 
-        if errI != nil || errJ != nil {
-            return false
-        }
+		if errI != nil || errJ != nil {
+			return false
+		}
 
-        return vi > vj
-    })
+		return vi > vj
+	})
 
-    return sorted
+	return sorted
+}
+
+func SaveValutesJSON(valutes []Valute, outputPath string) {
+	result := make([]ValuteJSON, 0, len(valutes))
+	for _, v := range valutes {
+
+		numCode, err := strconv.Atoi(v.NumCode)
+		if err != nil {
+			panic(fmt.Sprintf("Incorrect NumCode %q для %s: %v", v.NumCode, v.CharCode, err))
+		}
+
+		value, err := parseValue(v.Value)
+		if err != nil {
+			panic(fmt.Sprintf("Incorrect Value %q для %s: %v", v.Value, v.CharCode, err))
+		}
+
+		result = append(result, ValuteJSON{
+			NumCode:  numCode,
+			CharCode: v.CharCode,
+			Value:    value,
+		})
+	}
+
+	data, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		panic(fmt.Sprintf("error marshaling JSON: %v", err))
+	}
+
+	dir := filepath.Dir(outputPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
+	}
+
+	if err := os.WriteFile(outputPath, data, 0644); err != nil {
+		panic(fmt.Sprintf("error writing file %q: %v", outputPath, err))
+	}
 }
 
 func main() {
@@ -136,5 +179,8 @@ func main() {
 	EnsureOutputPath(cfg.OutputFile)
 
 	valCurs := LoadValCurs(cfg.InputFile)
+
 	sortedValutes := SortValutesByValueDesc(valCurs)
+
+	SaveValutesJSON(sortedValutes, cfg.OutputFile)
 }
