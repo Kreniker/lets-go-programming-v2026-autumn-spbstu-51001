@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"go.yaml.in/yaml/v3"
 )
@@ -35,6 +36,21 @@ func LoadConfig(path string) Config {
 	return cfg
 }
 
+func EnsureOutputPath(outputPath string) {
+	dir := filepath.Dir(outputPath)
+
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
+	}
+
+	f, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
+
+	if err != nil {
+		panic(fmt.Sprintf("error creating file %q: %v", outputPath, err))
+	}
+}
+
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to the config file")
 	flag.Parse()
@@ -42,6 +58,7 @@ func main() {
 	if *configPath == "" {
 		panic("config path is empty")
 	}
-	
+
 	cfg := LoadConfig(*configPath)
+	EnsureOutputPath(cfg.OutputFile)
 }
