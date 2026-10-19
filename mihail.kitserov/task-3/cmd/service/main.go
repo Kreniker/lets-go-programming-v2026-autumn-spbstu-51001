@@ -86,7 +86,9 @@ func LoadValCurs(path string) ValCurs {
 		panic(fmt.Sprintf("error opening input-file %q: %v", path, err))
 	}
 
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	decoder := xml.NewDecoder(file)
 	decoder.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
@@ -185,7 +187,6 @@ func main() {
 	valCurs := LoadValCurs(cfg.InputFile)
 
 	sortedValutes := SortValutesByValueDesc(valCurs)
-	//sortedValutes = filterValid(sortedValutes)
 
 	SaveValutesJSON(sortedValutes, cfg.OutputFile)
 }
