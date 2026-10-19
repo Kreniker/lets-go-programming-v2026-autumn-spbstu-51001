@@ -7,6 +7,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"go.yaml.in/yaml/v3"
 	"golang.org/x/text/encoding/charmap"
@@ -98,6 +100,11 @@ func LoadValCurs(path string) ValCurs {
 	return valCurs
 }
 
+func parseValue(s string) (float64, error) {
+	normalized := strings.ReplaceAll(s, ",", ".")
+	return strconv.ParseFloat(normalized, 64)
+}
+
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to the config file")
 	flag.Parse()
@@ -108,4 +115,6 @@ func main() {
 
 	cfg := LoadConfig(*configPath)
 	EnsureOutputPath(cfg.OutputFile)
+
+	valCurs := LoadValCurs(cfg.InputFile)
 }
