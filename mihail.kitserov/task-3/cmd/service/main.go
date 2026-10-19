@@ -134,15 +134,19 @@ func SortValutesByValueDesc(valCurs ValCurs) []Valute {
 func SaveValutesJSON(valutes []Valute, outputPath string) {
 	result := make([]ValuteJSON, 0, len(valutes))
 	for _, v := range valutes {
-
-		numCode, err := strconv.Atoi(v.NumCode)
-		if err != nil {
-			panic(fmt.Sprintf("Incorrect NumCode %q для %s: %v", v.NumCode, v.CharCode, err))
+		numCodeStr := strings.TrimSpace(v.NumCode)
+		numCode := 0
+		if numCodeStr != "" {
+			var err error
+			numCode, err = strconv.Atoi(numCodeStr)
+			if err != nil {
+				panic(fmt.Sprintf("incorrect NumCode %q for %s: %v", v.NumCode, v.CharCode, err))
+			}
 		}
 
 		value, err := parseValue(v.Value)
 		if err != nil {
-			panic(fmt.Sprintf("Incorrect Value %q для %s: %v", v.Value, v.CharCode, err))
+			value = 0
 		}
 
 		result = append(result, ValuteJSON{
@@ -170,7 +174,7 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 func filterValid(valutes []Valute) []Valute {
 	result := make([]Valute, 0, len(valutes))
 	for _, v := range valutes {
-		if v.NumCode == "" || v.CharCode == "" || v.Value == "" {
+		if strings.TrimSpace(v.CharCode) == "" && strings.TrimSpace(v.NumCode) == "" {
 			continue
 		}
 		result = append(result, v)
