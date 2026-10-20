@@ -150,10 +150,11 @@ func SortValutesByValueDesc(valCurs ValCurs) []Valute {
 
 func SaveValutesJSON(valutes []Valute, outputPath string) {
 	result := make([]ValuteJSON, 0, len(valutes))
+	
 	for _, valute := range valutes {
-		numCodeStr := strings.TrimSpace(valute.NumCode)
-
 		numCode := 0
+
+		numCodeStr := strings.TrimSpace(valute.NumCode)
 		if numCodeStr != "" {
 			var err error
 			numCode, err = strconv.Atoi(numCodeStr)
