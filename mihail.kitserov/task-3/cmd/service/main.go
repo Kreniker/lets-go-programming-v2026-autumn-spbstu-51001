@@ -19,6 +19,12 @@ import (
 
 var ErrUnsupportedCharset = errors.New("unsupported charset")
 
+const (
+	dirPermissions  = 0o755
+	filePermissions = 0o644
+	jsonPermissions = 0o600
+)
+
 type Config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
@@ -70,11 +76,11 @@ func LoadConfig(path string) Config {
 func EnsureOutputPath(outputPath string) {
 	dir := filepath.Dir(outputPath)
 
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, dirPermissions); err != nil {
 		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
 	}
 
-	f, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY, 0o644)
+	f, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY, filePermissions)
 
 	if err != nil {
 		panic(fmt.Sprintf("error creating file %q: %v", outputPath, err))
@@ -116,7 +122,12 @@ func LoadValCurs(path string) ValCurs {
 func parseValue(s string) (float64, error) {
 	normalized := strings.ReplaceAll(s, ",", ".")
 
-	return strconv.ParseFloat(normalized, 64)
+	value, err := strconv.ParseFloat(normalized, 64)
+    if err != nil {
+        return 0, fmt.Errorf("parse float %q: %w", normalized, err)
+    }
+
+    return value, nil
 }
 
 func SortValutesByValueDesc(valCurs ValCurs) []Valute {
@@ -174,7 +185,7 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
 	}
 
-	if err := os.WriteFile(outputPath, data, 0o600); err != nil {
+	if err := os.WriteFile(outputPath, data, jsonPermissions); err != nil {
 		panic(fmt.Sprintf("error writing file %q: %v", outputPath, err))
 	}
 }
