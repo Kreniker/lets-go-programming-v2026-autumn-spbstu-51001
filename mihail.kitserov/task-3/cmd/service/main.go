@@ -157,6 +157,7 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 		if numCodeStr != "" {
 			var err error
 			numCode, err = strconv.Atoi(numCodeStr)
+
 			if err != nil {
 				panic(fmt.Sprintf("incorrect NumCode %q for %s: %v", valute.NumCode, valute.CharCode, err))
 			}
