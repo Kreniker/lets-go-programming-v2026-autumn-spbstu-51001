@@ -80,13 +80,12 @@ func EnsureOutputPath(outputPath string) {
 		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
 	}
 
-	f, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY, filePermissions)
-
+	outputFile, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY, filePermissions)
 	if err != nil {
 		panic(fmt.Sprintf("error creating file %q: %v", outputPath, err))
 	}
 
-	_ = f.Close()
+	_ = outputFile.Close()
 }
 
 func LoadValCurs(path string) ValCurs {
@@ -123,11 +122,11 @@ func parseValue(s string) (float64, error) {
 	normalized := strings.ReplaceAll(s, ",", ".")
 
 	value, err := strconv.ParseFloat(normalized, 64)
-    if err != nil {
-        return 0, fmt.Errorf("parse float %q: %w", normalized, err)
-    }
+	if err != nil {
+		return 0, fmt.Errorf("parse float %q: %w", normalized, err)
+	}
 
-    return value, nil
+	return value, nil
 }
 
 func SortValutesByValueDesc(valCurs ValCurs) []Valute {
@@ -150,7 +149,7 @@ func SortValutesByValueDesc(valCurs ValCurs) []Valute {
 
 func SaveValutesJSON(valutes []Valute, outputPath string) {
 	result := make([]ValuteJSON, 0, len(valutes))
-	
+
 	for _, valute := range valutes {
 		numCode := 0
 
@@ -158,7 +157,6 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 		if numCodeStr != "" {
 			var err error
 			numCode, err = strconv.Atoi(numCodeStr)
-
 			if err != nil {
 				panic(fmt.Sprintf("incorrect NumCode %q for %s: %v", valute.NumCode, valute.CharCode, err))
 			}
@@ -182,7 +180,7 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 	}
 
 	dir := filepath.Dir(outputPath)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
 	}
 
