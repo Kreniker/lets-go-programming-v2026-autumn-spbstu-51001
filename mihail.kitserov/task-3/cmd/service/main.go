@@ -157,6 +157,7 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 		if numCodeStr != "" {
 			var err error
 			numCode, err = strconv.Atoi(numCodeStr)
+			
 			if err != nil {
 				panic(fmt.Sprintf("incorrect NumCode %q for %s: %v", valute.NumCode, valute.CharCode, err))
 			}
@@ -180,7 +181,7 @@ func SaveValutesJSON(valutes []Valute, outputPath string) {
 	}
 
 	dir := filepath.Dir(outputPath)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, dirPermissions); err != nil {
 		panic(fmt.Sprintf("error creating directory %q: %v", dir, err))
 	}
 
